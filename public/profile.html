@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    />
+    <title>Express Starter</title>
+  </head>
+  <body>
+    <div
+      class="d-flex justify-content-center align-items-center"
+      style="height: 100vh"
+    >
+      <div class="d-flex flex-column">
+        <div>
+          <label for="name">Name : </label>
+          <span id="name"></span>
+        </div>
+        <div>
+          <label for="email">Email : </label>
+          <span id="email"></span>
+        </div>
+        <div>
+          <div
+            onclick="localStorage.removeItem('authToken'); window.location.href='./login.html'"
+            class="btn btn-danger btn-sm my-2 btn-block"
+          >
+            Logout
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const wrapFunc = async () => {
+        const authToken = localStorage.getItem("authToken");
+        if (!authToken) {
+          window.location.href = "./login.html";
+        }
+
+        const res = await fetch("/api/users/", {
+          method: "GET",
+          headers: {
+            "x-auth-token": authToken,
+          },
+        });
+
+        const { data, error } = await res.json();
+        if (error) {
+          alert(error);
+          localStorage.removeItem("authToken");
+          window.location.href = "./login.html";
+        }
+        const nameEl = document.querySelector("#name");
+        const emailEl = document.querySelector("#email");
+        nameEl.innerHTML = data.name;
+        emailEl.innerHTML = data.email;
+      };
+      wrapFunc();
+    </script>
+  </body>
+</html>

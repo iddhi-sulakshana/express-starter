@@ -1,0 +1,29 @@
+import winston from "winston";
+
+export default () => {
+  winston.add(
+    new winston.transports.Console({
+      format: winston.format.printf((log) => log.message),
+    })
+  );
+  // exception logging for file
+  if (process.env.NODE_ENV !== "development") {
+    winston.exceptions.handle(
+      new winston.transports.File({ filename: "./logs/exceptions.log" })
+    );
+
+    winston.add(
+      new winston.transports.File({ filename: "./logs/logfile.log" })
+    );
+    require("winston-mongodb");
+    winston.add(
+      new winston.transports.MongoDB({
+        db: process.env.NODE_ENV
+          ? `${process.env.DB}_${process.env.NODE_ENV}`
+          : process.env.DB,
+        level: "error",
+      })
+    );
+  }
+  return winston;
+};

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    />
+    <title>Express Starter</title>
+  </head>
+  <body>
+    <div
+      class="d-flex justify-content-center align-items-center"
+      style="height: 100vh"
+    >
+      <div class="d-flex flex-column">
+        <form>
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              name="name"
+              aria-describedby="nameHelp"
+              placeholder="Enter name"
+            />
+          </div>
+          <div class="form-group">
+            <label for="email">Email address</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              name="email"
+              aria-describedby="emailHelp"
+              placeholder="Enter email"
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password"
+              placeholder="Password"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm btn-block">
+            Signup
+          </button>
+        </form>
+        <a href="./login.html" class="btn btn-primary btn-sm my-2 btn-block"
+          >Login</a
+        >
+      </div>
+    </div>
+    <script>
+      const token = localStorage.getItem("authToken");
+      if (token) {
+        window.location.href = "./profile.html";
+      }
+      const form = document.querySelector("form");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const name = document.querySelector("#name").value;
+        const email = document.querySelector("#email").value;
+        const password = document.querySelector("#password").value;
+        const res = await fetch("/api/users/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name, email, password }),
+        });
+        const { message, error } = await res.json();
+        if (error) return alert(error);
+        const authToken = res.headers.get("x-auth-token");
+        localStorage.setItem("authToken", authToken);
+        alert(message);
+        window.location.href = "/profile.html";
+      });
+    </script>
+  </body>
+</html>
